@@ -1,0 +1,32 @@
+<html>
+<head>
+<title>Documentation for the Webpage class</title>
+</head>
+<body>
+<h1>Documentation for the Webpage class</h1>
+<p>The Webpage class is essentially a replacement for urllib, urllib2, & urlencode. It wraps httplib and makes it easier to make a HTTP request. Among the things it makes easier is the ability to pass a timeout to the connection, ability to verify SSL certificates, automatic redirects, and parsing and encoding of URL strings.</p>
+<p>The constructor method takes many parameters, though only one (url) is mandatory. When the constructor method is called it parses the request parameters, port, etc. from both the given function parameters and the URL, after which it immediately fetches the webpage.<br><b>Webpage(url, parameters = {}, headers = {}, port = '', protocol = '', method = 'GET', redirects_follow = 0, timeout = 0, verify_ssl = 0, filename = '')</b><br>An explanation of the parameters:</p>
+<ul>
+<li><b>URL</b>: <string> - This is the URL that after parsing will be requested, if no further parameters are given to the constructor all information will be parsed from this string.</li>
+<li><b>parameters</b>: <dictionary> - parameters will be encoded according to RFC3986 and parsed into the request. They will override all parameters in the URL.</li>
+<li><b>headers</b>: <dictionary> - headers will be parsed in as part of the HTTP request.</li>
+<li><b>port</b>: <string> - port is the connection port, it will override the port in the URL. Will default to 80 if the protocol is HTTP and 443 if the protocol is HTTPS.</li>
+<li><b>protocol</b>: <string> - protocol is the protocol used. Currently HTTP and HTTPS are supported.</li>
+<li><b>method</b>: <string> - method is the method used. Currently GET, POST, and HEAD are supported. If an unsupported method is supplied an UnsupportedMethodException will be raised.</li>
+<li><b>redirects_follow</b>: <integer> - redirects_follow is the number of redirects the request should follow before stopping. The reason why a number of redirects is needed, as opposed to a boolean, is to avoid looping forever.</li>
+<li><b>timeout</b>: <integer> - timeout is an integer higher than 1 that signifies the number of seconds that a request should wait before timing out. If the request times out an NoWebsiteFoundException will be raised. Note that timeout will be reset after each redirect, so if 5 redirects are needed and the timeout is 4 seconds, it might take 20 seconds to time out.</li>
+<li><b>verify_ssl</b>: <integer> - verify_ssl can be either 0 or 1, 0 meaning no verification of SSL certificate, 1 meaning an ssl.SSLError will be raised if the certificate is not correct or not recognized by the major CAs. Note that the file "ca.pem" is needed to verify that the certificates are from one of the major CAs.</li>
+<li><b>filename</b>: <string> - filename is the filename where the body of the Webpage object will be saved. This can be either relative or absolute. Note that this does not verify filenames or permissions, hence it could overwrite important files elsewhere! Also it may raise Exceptions based on permissions or inavailability of location.</li>
+</ul>
+<p>Note: The URL passed in will only be used if the parameters are not used. It’s the assumption it’s safer to use a parametrized URL versus a URL string. Reason being that in the environment the function will be used the developer may be tempted to simply pass user input directly through, so if any parsing is applied or any security measures are taken they would most likely be in the parameters. Hence the parameters take precedence over the entire URL string.</p>
+<p>The Webpage object, once fetched, has five methods:</p>
+<ul>
+<li><b>request()</b>: returns a dictionary of the last request.</li>
+<li><b>request_all()</b>: returns a dictionary of all requests, with the first named 0, the second 1, etc. This is useful if the request was redirected.</li>
+<li><b>response()</b>: returns a dictionary of the last response.</li>
+<li><b>response_all()</b>: returns a dictionary of all responses, with the first named 0, the second 1, etc. This is useful if the request was redirected.</li>
+<li><b>redirects()</b>: returns a dictionary with two keys: "used" & "follow". "follow" = "redirects_follow" which optionally was provided in the creation of the object, whereas "used" indicates how many redirects was actually followed (or used).</li>
+</ul>
+<p>A thorough test suite is also provided in the file "test_webpage.py" and the most common CAs are provided in the file "ca.pem". The test suite uses the server test.ing-site.com to verify some of the tests, e.g. invalid and self signed SSL certificates, and redirects. The server is set up using Amazon EC2 with a static IP and a domain.</p>
+</body>
+</html>
